@@ -21,6 +21,7 @@
     .btn {
       font-size: 18px;
       cursor: pointer;
+      border: 0.1rem dashed black;
     }
 
     #notation {
@@ -50,6 +51,7 @@
   <script>
     const sounds = ["덩", "딱", "쿵", "따"];
     let bundles = [];
+    const maxBundlesPerLine = 4;  // Limit of bundles per line
 
     function createCell(content = "") {
       const cell = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -90,14 +92,50 @@
     function createBundle() {
       const bundle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       bundle.setAttribute("class", "bundle");
-      bundle.setAttribute("width", "160");
+      bundle.setAttribute("width", "180");
       bundle.setAttribute("height", "60");
 
       for (let i = 0; i < 3; i++) {
         const cell = createCell();
         cell.setAttribute("transform", `translate(${i * 55}, 0)`);
+
+        if (i < 2) {
+          const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          line.setAttribute("x1", 50);
+          line.setAttribute("y1", 0);
+          line.setAttribute("x2", 50);
+          line.setAttribute("y2", 50);
+          line.setAttribute("stroke", "red");
+          line.setAttribute("stroke-dasharray", "2,2");
+          cell.appendChild(line);
+        }
+
         bundle.appendChild(cell);
       }
+
+      // Add + and - controls to the bundle
+      const addBtn = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      addBtn.setAttribute("x", "160");
+      addBtn.setAttribute("y", "15");
+      addBtn.setAttribute("fill", "blue");
+      addBtn.setAttribute("font-size", "20");
+      addBtn.setAttribute("font-weight", "bold");
+      addBtn.textContent = "+";
+      addBtn.style.cursor = "pointer";
+      addBtn.addEventListener("click", addBundle);
+
+      const removeBtn = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      removeBtn.setAttribute("x", "164");
+      removeBtn.setAttribute("y", "25");
+      removeBtn.setAttribute("fill", "red");
+      removeBtn.setAttribute("font-size", "20");
+      removeBtn.setAttribute("font-weight", "bold");
+      removeBtn.textContent = "_";
+      removeBtn.style.cursor = "pointer";
+      removeBtn.addEventListener("click", removeBundle);
+
+      bundle.appendChild(addBtn);
+      bundle.appendChild(removeBtn);
 
       return bundle;
     }
@@ -105,13 +143,31 @@
     function addBundle() {
       const bundle = createBundle();
       bundles.push(bundle);
-      document.getElementById("notation").appendChild(bundle);
+
+      const notation = document.getElementById("notation");
+
+      if (bundles.length % maxBundlesPerLine === 1) {
+        const newLine = document.createElement("div");
+        newLine.className = "line";
+        notation.appendChild(newLine);
+      }
+
+      const lines = notation.getElementsByClassName("line");
+      lines[lines.length - 1].appendChild(bundle);
     }
 
     function removeBundle() {
       if (bundles.length > 0) {
-        const bundle = bundles.pop();
-        document.getElementById("notation").removeChild(bundle);
+        const notation = document.getElementById("notation");
+        const lines = notation.getElementsByClassName("line");
+
+        const lastLine = lines[lines.length - 1];
+        const lastBundle = bundles.pop();
+
+        lastLine.removeChild(lastBundle);
+        if (lastLine.children.length === 0) {
+          notation.removeChild(lastLine);
+        }
       }
     }
 
@@ -122,5 +178,6 @@
     addBundle();
   </script>
 </body>
+
 
 </html>

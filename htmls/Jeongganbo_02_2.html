@@ -37,19 +37,18 @@
     <div id="notation" class="p-2">
       <!-- Bundles will be inserted here -->
     </div>
-    <div class="controls">
-      <span class="btn" id="addBundle">+</span>
-      <span class="btn" id="removeBundle">-</span>
+    <div class="controls text-center mt-2">
+      <span class="btn btn-primary" id="addBundle">+</span>
     </div>
   </div>
 
-  <!-- Option 1: Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
   <script>
     const sounds = ["덩", "딱", "쿵", "따"];
     let bundles = [];
+    const MAX_BUNDLES_PER_LINE = 4;
 
     function createCell(content = "") {
       const cell = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -87,17 +86,51 @@
       return group;
     }
 
+    function createDashedLine() {
+      const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+      line.setAttribute("x1", "52");
+      line.setAttribute("y1", "5");
+      line.setAttribute("x2", "52");
+      line.setAttribute("y2", "50");
+      line.setAttribute("stroke", "red");
+      line.setAttribute("stroke-dasharray", "4");
+      return line;
+    }
+
+    function createRemoveButton(bundle) {
+      const btn = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      btn.setAttribute("x", "160");
+      btn.setAttribute("y", "20");
+      btn.setAttribute("fill", "red");
+      btn.setAttribute("font-size", "20");
+      btn.setAttribute("cursor", "pointer");
+      btn.textContent = "x";
+      btn.addEventListener("click", () => {
+        removeBundle(bundle);
+      });
+      return btn;
+    }
+
     function createBundle() {
       const bundle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       bundle.setAttribute("class", "bundle");
-      bundle.setAttribute("width", "160");
+      bundle.setAttribute("width", "180");
       bundle.setAttribute("height", "60");
 
       for (let i = 0; i < 3; i++) {
         const cell = createCell();
         cell.setAttribute("transform", `translate(${i * 55}, 0)`);
         bundle.appendChild(cell);
+
+        if (i < 2) {
+          const dashedLine = createDashedLine();
+          dashedLine.setAttribute("transform", `translate(${i * 55}, 0)`);
+          bundle.appendChild(dashedLine);
+        }
       }
+
+      const removeButton = createRemoveButton(bundle);
+      bundle.appendChild(removeButton);
 
       return bundle;
     }
@@ -105,22 +138,46 @@
     function addBundle() {
       const bundle = createBundle();
       bundles.push(bundle);
-      document.getElementById("notation").appendChild(bundle);
+
+      const notationDiv = document.getElementById("notation");
+      const lineCount = Math.floor(bundles.length / MAX_BUNDLES_PER_LINE);
+
+      if (bundles.length % MAX_BUNDLES_PER_LINE === 1) {
+        const newLine = document.createElement("div");
+        newLine.setAttribute("class", "line");
+        newLine.setAttribute("style", `margin-top:${lineCount > 0 ? 20 : 0}px`);
+        newLine.appendChild(bundle);
+        notationDiv.appendChild(newLine);
+      } else {
+        const lines = notationDiv.getElementsByClassName("line");
+        const lastLine = lines[lines.length - 1];
+        lastLine.appendChild(bundle);
+      }
     }
 
-    function removeBundle() {
-      if (bundles.length > 0) {
-        const bundle = bundles.pop();
-        document.getElementById("notation").removeChild(bundle);
+    function removeBundle(bundle) {
+      const index = bundles.indexOf(bundle);
+      if (index !== -1) {
+        bundles.splice(index, 1);
+
+        const notationDiv = document.getElementById("notation");
+        notationDiv.removeChild(bundle.parentNode);
+
+        bundles.forEach((b, i) => {
+          const lineIndex = Math.floor(i / MAX_BUNDLES_PER_LINE);
+          const lines = notationDiv.getElementsByClassName("line");
+          lines[lineIndex].appendChild(b);
+        });
       }
     }
 
     document.getElementById("addBundle").addEventListener("click", addBundle);
-    document.getElementById("removeBundle").addEventListener("click", removeBundle);
 
     // Initial Bundle
     addBundle();
   </script>
 </body>
+
+
 
 </html>

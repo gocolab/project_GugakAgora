@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive 정간보 Editor</title>
+  <style>
+    /* Basic styling for SVG grid and cells */
+    .notation-grid {
+      display: inline-block;
+      border: 1px solid black;
+    }
+
+    .cell {
+      width: 60px;
+      height: 60px;
+      border: 1px solid black;
+      text-align: center;
+      vertical-align: middle;
+      font-size: 24px;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .bundle {
+      display: inline-flex;
+    }
+
+    .add-remove-buttons {
+      position: absolute;
+      top: -10px;
+      right: 0;
+    }
+
+    .add-remove-buttons button {
+      font-size: 12px;
+      padding: 0;
+      margin: 0;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="editor">
+    <!-- Initial 3-cell bundle -->
+    <div class="bundle">
+      <div class="cell" contenteditable="true"></div>
+      <div class="cell" contenteditable="true"></div>
+      <div class="cell" contenteditable="true"></div>
+      <div class="add-remove-buttons">
+        <button class="add">+</button>
+        <button class="remove">-</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const editor = document.getElementById('editor');
+
+    // Characters to cycle through
+    const characters = ['덩', '딱', '쿵', '따'];
+
+    editor.addEventListener('click', function (event) {
+      if (event.target.classList.contains('cell')) {
+        const cell = event.target;
+        cell.focus();
+
+        // On click, display next character
+        let currentChar = cell.innerText;
+        let nextChar = characters[(characters.indexOf(currentChar) + 1) % characters.length];
+        cell.innerText = nextChar;
+      }
+
+      // Add or remove bundles
+      if (event.target.classList.contains('add')) {
+        addBundle();
+      } else if (event.target.classList.contains('remove')) {
+        removeBundle(event.target);
+      }
+    });
+
+    // Function to add a new bundle of cells
+    function addBundle() {
+      const newBundle = document.createElement('div');
+      newBundle.classList.add('bundle');
+      newBundle.innerHTML = `
+                <div class="cell" contenteditable="true"></div>
+                <div class="cell" contenteditable="true"></div>
+                <div class="cell" contenteditable="true"></div>
+                <div class="add-remove-buttons">
+                    <button class="add">+</button>
+                    <button class="remove">-</button>
+                </div>
+            `;
+      editor.appendChild(newBundle);
+    }
+
+    // Function to remove a bundle of cells
+    function removeBundle(button) {
+      const bundle = button.closest('.bundle');
+      bundle.remove();
+    }
+
+    // Handling mouse wheel event for cycling characters
+    document.addEventListener('wheel', function (event) {
+      if (event.target.classList.contains('cell')) {
+        event.preventDefault();
+        const cell = event.target;
+        let currentChar = cell.innerText;
+        let currentIndex = characters.indexOf(currentChar);
+        let nextIndex = (currentIndex + (event.deltaY < 0 ? -1 : 1) + characters.length) % characters.length;
+        cell.innerText = characters[nextIndex];
+      }
+    }, { passive: false });
+  </script>
+</body>
+
+</html>
