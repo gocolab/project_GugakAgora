@@ -33,22 +33,38 @@
 
 <body>
   <div class="container">
-    <!-- Title and Edit Button -->
-    <div class="d-flex justify-content-center py-2">
-      <h3 class="text-center m-0">정간보 - 장구</h3>
+    <!-- Title and Controls -->
+    <div class="d-flex justify-content-between py-2">
+      <!-- Instrument Type Section -->
+      <div>
+        <label for="instrumentType">악기 종류: </label>
+        <select id="instrumentType" class="form-select form-select-sm">
+          <option value="장구">장구</option>
+          <option value="징">징</option>
+          <option value="꽹과리">꽹과리</option>
+          <option value="북">북</option>
+          <option value="강약">강약</option>
+        </select>
+      </div>
+
+      <!-- Title Section -->
+      <h3 class="text-center m-0">정간보 - <span id="movementName">장구</span></h3>
+
+      <!-- Edit Button -->
       <button type="button" class="btn btn-primary btn-sm px-2" id="editTitleButton">
         <i class="bi bi-pencil-fill"></i>
       </button>
     </div>
 
-    <!-- Notation Area -->
-    <div id="notation" class="p-2">
-      <!-- Bundles will be inserted here -->
-    </div>
-    <!-- Controls -->
+    <!-- Controls Notation Bundle -->
     <div class="controls py-1">
       <span class="btn" id="addBundle">+</span>
       <span class="btn" id="removeBundle">-</span>
+    </div>
+
+    <!-- Notation Area -->
+    <div id="notation" class="p-2">
+      <!-- Bundles will be inserted here -->
     </div>
   </div>
 
@@ -57,11 +73,11 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="editTitleModalLabel">제목 수정</h5>
+          <h5 class="modal-title" id="editTitleModalLabel">악장명 수정</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="text" id="newTitle" class="form-control" placeholder="새 제목을 입력하세요">
+          <input type="text" id="newTitle" class="form-control" placeholder="새 악장명을 입력하세요">
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">취소</button>
@@ -70,14 +86,26 @@
       </div>
     </div>
   </div>
-  <!-- Option 1: Bootstrap Bundle with Popper -->
+
+  <!-- Scripts -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
     crossorigin="anonymous"></script>
   <script>
+    const instrumentTypes = ["장구", "징", "꽹과리", "북", "강약"];
+    const sounds = ["덩", "딱", "쿵", "따"];
+    let bundles = [];
+    const maxBundlesPerLine = 4;
+
+    // 악기 종류 변경 시 악장명 갱신
+    document.getElementById("instrumentType").addEventListener("change", function () {
+      const movementName = document.getElementById("instrumentType").value;
+      document.getElementById("movementName").textContent = movementName;
+    });
+
     // 제목 수정 버튼 클릭 시 모달 열기
     document.getElementById("editTitleButton").addEventListener("click", function () {
-      const currentTitle = document.querySelector("h3.text-center").textContent;
+      const currentTitle = document.getElementById("movementName").textContent;
       document.getElementById("newTitle").value = currentTitle;
       const editTitleModal = new bootstrap.Modal(document.getElementById("editTitleModal"));
       editTitleModal.show();
@@ -87,17 +115,11 @@
     document.getElementById("saveTitleButton").addEventListener("click", function () {
       const newTitle = document.getElementById("newTitle").value;
       if (newTitle.trim() !== "") {
-        document.querySelector("h3.text-center").textContent = newTitle;
+        document.getElementById("movementName").textContent = newTitle;
       }
       const editTitleModal = bootstrap.Modal.getInstance(document.getElementById("editTitleModal"));
       editTitleModal.hide();
     });
-
-  </script>
-  <script>
-    const sounds = ["덩", "딱", "쿵", "따"];
-    let bundles = [];
-    const maxBundlesPerLine = 4;  // Limit of bundles per line
 
     function createCell(content = "") {
       const cell = document.createElementNS("http://www.w3.org/2000/svg", "rect");
@@ -116,9 +138,18 @@
       group.appendChild(cell);
       group.appendChild(text);
 
+      group.addEventListener("mouseover", () => {
+        cell.setAttribute("style", "fill:lightgray;stroke:black;stroke-width:1");
+      });
+
+      group.addEventListener("mouseout", () => {
+        cell.setAttribute("style", "fill:white;stroke:black;stroke-width:1");
+      });
+
       group.addEventListener("click", () => {
         const currentIndex = sounds.indexOf(text.textContent);
         text.textContent = sounds[(currentIndex + 1) % sounds.length];
+        updateDataStorage(group);
       });
 
       group.addEventListener("wheel", (e) => {
@@ -130,6 +161,7 @@
           currentIndex = (currentIndex - 1 + sounds.length) % sounds.length;
         }
         text.textContent = sounds[currentIndex];
+        updateDataStorage(group);
       });
 
       return group;
@@ -159,7 +191,6 @@
         bundle.appendChild(cell);
       }
 
-      // Add + and - controls to the bundle
       const addBtn = document.createElementNS("http://www.w3.org/2000/svg", "text");
       addBtn.setAttribute("x", "160");
       addBtn.setAttribute("y", "15");
@@ -168,6 +199,7 @@
       addBtn.setAttribute("font-weight", "bold");
       addBtn.textContent = "+";
       addBtn.style.cursor = "pointer";
+      addBtn.style.visibility = "hidden";
       addBtn.addEventListener("click", addBundle);
 
       const removeBtn = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -176,9 +208,20 @@
       removeBtn.setAttribute("fill", "red");
       removeBtn.setAttribute("font-size", "20");
       removeBtn.setAttribute("font-weight", "bold");
-      removeBtn.textContent = "_";
+      removeBtn.textContent = "-";
       removeBtn.style.cursor = "pointer";
+      removeBtn.style.visibility = "hidden";
       removeBtn.addEventListener("click", removeBundle);
+
+      bundle.addEventListener("mouseover", () => {
+        addBtn.style.visibility = "visible";
+        removeBtn.style.visibility = "visible";
+      });
+
+      bundle.addEventListener("mouseout", () => {
+        addBtn.style.visibility = "hidden";
+        removeBtn.style.visibility = "hidden";
+      });
 
       bundle.appendChild(addBtn);
       bundle.appendChild(removeBtn);
@@ -200,6 +243,8 @@
 
       const lines = notation.getElementsByClassName("line");
       lines[lines.length - 1].appendChild(bundle);
+
+      updateDataStorage(bundle);
     }
 
     function removeBundle() {
@@ -214,7 +259,14 @@
         if (lastLine.children.length === 0) {
           notation.removeChild(lastLine);
         }
+
+        updateDataStorage(lastBundle);
       }
+    }
+
+    function updateDataStorage(bundle) {
+      // 데이터 저장소 갱신 로직 작성
+      console.log("데이터 저장소 갱신됨:", bundle);
     }
 
     document.getElementById("addBundle").addEventListener("click", addBundle);
@@ -224,6 +276,5 @@
     addBundle();
   </script>
 </body>
-
 
 </html>

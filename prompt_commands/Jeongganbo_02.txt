@@ -1,0 +1,21 @@
+- 타이틀 
+ + 3 부분 구분 : 악기 종류, 악장명, 수정 버튼(modal)
+ + 정렬 : 악기 종류(좌측 끝), 악장명(중앙), 수정 버튼(우측 끝)
+ + 악기 종류
+	-- 악기 종류들 : 장구, 징, 꽹꽈리, 북, 강약
+	-- 악장 구성 : bootstrap5 check box
+
+- 악장
+ + cell : 직사각형, 두 글자 각각 입력 형식, mouse over 시 선택 바탕색 표시, mouse out 시 원 상태, cell 입력값 변화 따른 javascript 변수에 저장
+ + bundle cell
+    -- cell 사이 붙고 빨간 색 점선 표시
+    -- bundle cell에 붙는 '+'와 '-'는 해당 bundle cell mouse over 시만 표시
+    -- bundle cell에 붙는 '+'와 '-' 표시 위치는 bundle cell 마지막 cell 상단
+    -- bundle cell에 붙는 '+'와 '-' 따른 변수 저장된 값 수정
+    -- 중간 bundle cell 수정 따른 bundle cell 알맞게 정렬 
+    -- bundle cell 바로 위에 강약('<', '>' 표시)
+
+- 악기 종류
+  + 악기 종류 check box 선택 따라 표시
+  + bundle cell 표시
+ 
