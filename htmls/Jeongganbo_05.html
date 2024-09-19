@@ -38,15 +38,15 @@
       <!-- Instrument Selection -->
       <div class="d-flex">
         <div class="form-check">
-          <input class="form-check-input" type="checkbox" id="instrumentStrength" value="강약" checked>
+          <input class="form-check-input" type="checkbox" id="instrumentStrength" name="Strength" value="강약" checked>
           <label class="form-check-label" for="instrumentStrength">강약</label>
         </div>
         <div class="form-check ms-2">
-          <input class="form-check-input" type="checkbox" id="instrumentJanggu" value="장구" checked>
+          <input class="form-check-input" type="checkbox" id="instrumentJanggu" name="Janggu" value="장구" checked>
           <label class="form-check-label" for="instrumentJanggu">장구</label>
         </div>
         <div class="form-check ms-2">
-          <input class="form-check-input" type="checkbox" id="instrumentJing" value="징">
+          <input class="form-check-input" type="checkbox" id="instrumentJing" name="Jing" value="징">
           <label class="form-check-label" for="instrumentJing">징</label>
         </div>
         <!-- Add more instruments as needed -->
@@ -98,11 +98,6 @@
     crossorigin="anonymous"></script>
 
   <script>
-    const sounds = ['', "덩", "딱", "쿵", "따"];
-    let bundles = [];
-    const maxBundlesPerLine = 4;  // Limit of bundles per line
-    let selectedCell = null;
-
     // 제목 수정 버튼 클릭 시 모달 열기
     document.getElementById("editTitleButton").addEventListener("click", function () {
       const currentTitle = document.getElementById("movementTitle").textContent;
@@ -121,15 +116,28 @@
       editTitleModal.hide();
     });
 
+  </script>
+  <script>
+    const sounds = ['', "덩", "딱", "쿵", "따"];
+    let bundles = [];
+    const maxBundlesPerLine = 4;  // Limit of bundles per line
+    let selectedCell = null;
+
     function changeCellText(textElement, direction) {
       const currentIndex = sounds.indexOf(textElement.textContent);
       const nextIndex = (currentIndex + direction + sounds.length) % sounds.length;
       textElement.textContent = sounds[nextIndex];
     }
 
-    function createInstrumentCell(cellCountInABundle, bundleWidth, bundleHeight, instrumentName) {
-      const cellWidth = bundleWidth / cellCountInABundle;
-      const cellHeight = 50;
+    function createInstrumentCell(InstrumentName) {
+      const cellWidth = 60;
+      const cellHeight = 80;
+
+      const bundle = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      bundle.setAttribute("class", "bundle");
+      bundle.setAttribute("width", cellWidth);
+      bundle.setAttribute("height", cellHeight);
+
       const cell = document.createElementNS("http://www.w3.org/2000/svg", "rect");
       cell.setAttribute("width", cellWidth);
       cell.setAttribute("height", cellHeight);
@@ -140,7 +148,15 @@
       text1.setAttribute("y", "30");
       text1.setAttribute("text-anchor", "middle");
       text1.setAttribute("font-size", "20");
-      text1.textContent = instrumentName;
+      text1.textContent = InstrumentName;
+
+      const group = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      group.appendChild(cell);
+      group.appendChild(text1);
+
+      bundle.appendChild(group);
+      return bundle;
+
     }
 
     function createCell(cellCountInABundle, bundleWidth, bundleHeight) {
@@ -218,8 +234,6 @@
       bundle.setAttribute("class", "bundle");
       bundle.setAttribute("width", bundleWidth);
       bundle.setAttribute("height", bundleHeight);
-
-      createInstrumentCell(cellCountInABundle, bundleWidth, bundleHeight, "장구");
 
       const spacingBetweenCell = bundleHeight;
       const spacingBundleHeight = 20;
@@ -307,6 +321,8 @@
       if (bundles.length % maxBundlesPerLine === 1) {
         const line = document.createElement("div");
         line.className = "d-flex align-items-center py-2";
+        const instrumentCell = createInstrumentCell('장구')
+        line.appendChild(instrumentCell);
         line.appendChild(bundle);
         notation.appendChild(line);
       } else {
@@ -329,10 +345,14 @@
       }
     }
 
+    function addRow() {
+      addBundle();
+    }
+
     document.getElementById("addBundle").addEventListener("click", addBundle);
     document.getElementById("removeBundle").addEventListener("click", removeBundle);
 
-    addBundle()
+    addRow();
   </script>
 </body>
 

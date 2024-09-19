@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>정간보 악보</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    .bundle {
+      display: inline-block;
+      margin-right: 0rem;
+    }
+
+    .controls {
+      text-align: center;
+    }
+
+    .btn {
+      font-size: 18px;
+      cursor: pointer;
+      border: 0.1rem dashed black;
+    }
+
+    #notation {
+      border: 0.1rem dashed gray;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Title Area with Instrument, Movement, and Edit Button -->
+    <div class="d-flex justify-content-between align-items-center py-2">
+      <!-- Instrument Selection -->
+      <div class="d-flex">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="instrumentStrength" value="강약" checked>
+          <label class="form-check-label" for="instrumentStrength">강약</label>
+        </div>
+        <div class="form-check ms-2">
+          <input class="form-check-input" type="checkbox" id="instrumentJanggu" value="장구" checked>
+          <label class="form-check-label" for="instrumentJanggu">장구</label>
+        </div>
+        <div class="form-check ms-2">
+          <input class="form-check-input" type="checkbox" id="instrumentJing" value="징">
+          <label class="form-check-label" for="instrumentJing">징</label>
+        </div>
+      </div>
+
+      <!-- Movement Title -->
+      <h3 class="text-center m-0" id="movementTitle">악장 이름</h3>
+
+      <!-- Edit Button -->
+      <button type="button" class="btn btn-primary btn-sm px-2" id="editTitleButton">
+        <i class="bi bi-pencil-fill"></i>
+      </button>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls py-1">
+      <span class="btn" id="addBundle">+</span>
+      <span class="btn" id="removeBundle">-</span>
+    </div>
+
+    <!-- Notation Area -->
+    <div id="notation" class="p-2 m-2">
+      <!-- Bundles will be inserted here -->
+    </div>
+  </div>
+
+  <script>
+    const sounds = ["", "덩", "딱", "쿵", "따"];
+    let notationData = { Strength: [], Janggu: [], Jing: [] };
+    const maxBundlesPerLine = 4;
+
+    // Function to update instrument visibility based on checkboxes
+    function updateInstrumentVisibility() {
+      document.querySelectorAll('.instrument-row').forEach(row => {
+        const instrument = row.getAttribute('data-instrument');
+        const isChecked = document.getElementById(`instrument${instrument}`).checked;
+        row.style.display = isChecked ? 'flex' : 'none';
+      });
+    }
+
+    // Create a row for each instrument
+    function createRow(instrument) {
+      const row = document.createElement('div');
+      row.classList.add('instrument-row', 'd-flex', 'py-1');
+      row.setAttribute('data-instrument', instrument);
+      return row;
+    }
+
+    // Create bundles for each instrument row
+    function createBundleForRow(instrument) {
+      const cellCount = 3;
+      const bundle = document.createElement('div');
+      bundle.classList.add('d-flex', 'bundle');
+      for (let i = 0; i < cellCount; i++) {
+        const cell = createCell(instrument);
+        bundle.appendChild(cell);
+      }
+      return bundle;
+    }
+
+    // Create individual cells for the bundle
+    function createCell(instrument) {
+      const cell = document.createElement('div');
+      cell.classList.add('notation-cell');
+      cell.textContent = sounds[1];  // Default sound is "덩"
+
+      cell.addEventListener('click', () => {
+        const currentIndex = sounds.indexOf(cell.textContent);
+        cell.textContent = sounds[(currentIndex + 1) % sounds.length];
+        updateNotationData(instrument);
+      });
+      return cell;
+    }
+
+    // Update notation data based on current cells
+    function updateNotationData(instrument) {
+      const row = document.querySelector(`[data-instrument="${instrument}"]`);
+      const cells = row.querySelectorAll('.notation-cell');
+      const currentData = Array.from(cells).map(cell => cell.textContent);
+      notationData[instrument] = currentData;
+    }
+
+    // Add new bundle to each instrument row
+    function addBundle() {
+      const instruments = ['Strength', 'Janggu', 'Jing'];
+      instruments.forEach(instrument => {
+        const row = document.querySelector(`[data-instrument="${instrument}"]`);
+        if (row) {
+          const bundle = createBundleForRow(instrument);
+          row.appendChild(bundle);
+          updateNotationData(instrument);
+        }
+      });
+    }
+
+    // Remove last bundle from each instrument row
+    function removeBundle() {
+      const instruments = ['Strength', 'Janggu', 'Jing'];
+      instruments.forEach(instrument => {
+        const row = document.querySelector(`[data-instrument="${instrument}"]`);
+        if (row && row.lastElementChild) {
+          row.removeChild(row.lastElementChild);
+          updateNotationData(instrument);
+        }
+      });
+    }
+
+    // Initial load
+    function init() {
+      const notation = document.getElementById('notation');
+      ['Strength', 'Janggu', 'Jing'].forEach(instrument => {
+        const row = createRow(instrument);
+        for (let i = 0; i < maxBundlesPerLine; i++) {
+          const bundle = createBundleForRow(instrument);
+          row.appendChild(bundle);
+        }
+        notation.appendChild(row);
+      });
+      updateInstrumentVisibility();
+    }
+
+    // Event listeners for adding/removing bundles
+    document.getElementById('addBundle').addEventListener('click', addBundle);
+    document.getElementById('removeBundle').addEventListener('click', removeBundle);
+
+    // Checkbox change event to update visibility
+    document.querySelectorAll('.form-check-input').forEach(input => {
+      input.addEventListener('change', updateInstrumentVisibility);
+    });
+
+    // Initialize the grid on load
+    init();
+  </script>
+</body>
+
+
+</html>
