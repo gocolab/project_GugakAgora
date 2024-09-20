@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+  <style>
+    .row_strength text {
+      text-anchor: middle;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .row_Janggu text,
+    .row_Jing text {
+      text-anchor: middle;
+      font-size: 16px;
+    }
+
+    .strength_bundle rect {
+      fill: white;
+      stroke: white;
+    }
+
+    .Janggu_bundle rect,
+    .Jing_bundle rect {
+      fill: white;
+      stroke: black;
+    }
+
+    .Janggu_text rect,
+    .Jing_text rect {
+      fill: white;
+      stroke: black;
+    }
+
+    .row_Janggu text,
+    .row_Jing text {
+      font-size: 20px;
+    }
+
+    line {
+      stroke: black;
+      stroke-width: 2;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="container min-vh-100">
+    <svg xmlns="http://www.w3.org/2000/svg" width="100vh" height="100vh">
+      <g id="row_1" transform="translate(0, 0)">
+        <!-- 강약 텍스트 -->
+        <g id="row_1_strength_1" class="row_strength" transform="translate(0, 0)">
+          <g class="strength_text" transform="translate(0, 0)">
+            <text x="25" y="25">강약</text>
+            <line x1="50" y1="0" x2="50" y2="50"></line>
+          </g>
+
+          <!-- 강약 : 기호 -->
+          <g id="strength_bundle_1" class="strength_bundle" transform="translate(50, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <rect x="50" y="0" width="50" height="50" />
+            <rect x="100" y="0" width="50" height="50" />
+            <g id="strength_value_1" transform="translate(0,10)">
+              <line x1="50" y1="10" x2="140" y2="0" />
+              <line x1="50" y1="10" x2="140" y2="20" />
+            </g>
+          </g>
+
+          <g id="strength_bundle_2" class="strength_bundle" transform="translate(200, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <rect x="50" y="0" width="50" height="50" />
+            <rect x="100" y="0" width="50" height="50" />
+            <g id="strength_value_2" transform="translate(0,10)">
+              <line x1="50" y1="10" x2="140" y2="0" />
+              <line x1="50" y1="10" x2="140" y2="20" />
+            </g>
+          </g>
+        </g>
+
+        <!-- 두 번째 행: 장구, 덩, 덩, 덩 -->
+        <g id="row_1_Janggu_1" class="row_Janggu" transform="translate(0, 50)">
+          <g class="Janggu_text">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">장구</text>
+          </g>
+
+          <g id="Janggu_bundle_1" class="Janggu_bundle" transform="translate(50, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">덩</text>
+
+            <rect x="50" y="0" width="50" height="50" />
+            <text x="75" y="30">덩</text>
+
+            <rect x="100" y="0" width="50" height="50" />
+            <text x="125" y="30">덩</text>
+          </g>
+
+          <g id="Janggu_bundle_2" class="Janggu_bundle" transform="translate(200, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">덩</text>
+
+            <rect x="50" y="0" width="50" height="50" />
+            <text x="75" y="30">덩</text>
+
+            <rect x="100" y="0" width="50" height="50" />
+            <text x="125" y="30">덩</text>
+          </g>
+        </g>
+
+        <!-- 세 번째 행: 징, 덩, 덩, 덩 -->
+        <g id="row_1_Jing_1" class="row_Jing" transform="translate(0, 100)">
+          <g class="Jing_text">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">징</text>
+          </g>
+
+          <g id="Jing_bundle_1" class="Jing_bundle" transform="translate(50, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">덩</text>
+
+            <rect x="50" y="0" width="50" height="50" />
+            <text x="75" y="30">덩</text>
+
+            <rect x="100" y="0" width="50" height="50" />
+            <text x="125" y="30">덩</text>
+          </g>
+
+          <g id="Jing_bundle_2" class="Jing_bundle" transform="translate(200, 0)">
+            <rect x="0" y="0" width="50" height="50" />
+            <text x="25" y="30">덩</text>
+
+            <rect x="50" y="0" width="50" height="50" />
+            <text x="75" y="30">덩</text>
+
+            <rect x="100" y="0" width="50" height="50" />
+            <text x="125" y="30">덩</text>
+          </g>
+        </g>
+      </g>
+    </svg>
+  </div>
+</body>
+
+</html>
